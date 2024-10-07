@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps and JSONBin Integration</title>
+    <!-- Include the Google Maps API script -->
+    <script src=https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ep4rBtq2tecPJgVqHYS9vt6vKwFLFuE&callback=initMap async defer></script>
+    <script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 39.7029, lng: -75.1118},  //Starting Location, could be profile location?
+            zoom: 8
+        });
+    }
+    </script>
+</head>
+<body>
+    <!-- Form to capture location input -->
+    <form id="locationForm">
+        <label for="locationInput">Enter Location:</label>
+        <input type="text" id="locationInput" name="locationInput">
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Div to display the map -->
+    <div id="map" style="height: 400px; width: 100%;"></div>
+
+    <!-- JavaScript code -->
+    <script>
+        let map; // Variable to hold the map instance
+
+        // Function to initialize the map
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -34.397, lng: 150.644 }, // Default center of the map
+                zoom: 8 // Default zoom level
+            });
+        }
+
+        // Event listener for form submission
+        document.getElementById('locationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            const location = document.getElementById('locationInput').value; // Get the input value
+            geocodeLocation(location); // Call function to geocode the location
+            sendDataToJSONBin(location); // Call function to send data to JSONBin.io
+        });
+
+        // Function to geocode the location and update the map
+        async function geocodeLocation(location) {
+            const geocoder = new google.maps.Geocoder(); // Create a new geocoder instance
+            geocoder.geocode({ 'address': location }, function(results, status) {
+                if (status === 'OK') {
+                    map.setCenter(results[0].geometry.location); // Center the map on the geocoded location
+                    new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location // Place a marker at the geocoded location
+                    });
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status); // Alert if geocoding fails
+                }
+            });
+        }
+
+        // Function to send data to JSONBin.io
+        async function sendDataToJSONBin(data) {
+            const apiKey = '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm'; // Test bin key
+            const binId = '6702a99aacd3cb34a8923306'; // Replace with your JSONBin.io bin ID
+            const url = `https://api.jsonbin.io/v3/b/${binId}`; // URL for the JSONBin.io bin
+
+            const response = await fetch(url, {
+                method: 'PUT', // Use 'PUT' to update the bin, 'POST' to create a new bin
+                headers: {
+                    'Content-Type': 'application/json', // Set the content type to JSON
+                    'X-Master-Key': apiKey // Include the API key in the headers
+                },
+                body: JSON.stringify({ location: data }) // Send the data as a JSON string
+            });
+
+            if (response.ok) {
+                console.log('Data successfully sent to JSONBin.io'); // Log success message
+            } else {
+                console.error('Failed to send data to JSONBin.io'); // Log error message
+            }
+        }
+    </script>
+</body>
+</html>

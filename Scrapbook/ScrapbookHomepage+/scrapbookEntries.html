@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrapbook Project</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ep4rBtq2tecPJgVqHYS9vt6vKwFLFuE&callback=initMap" async defer></script>
+    <style>
+        .info-window-content {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <form id="scrapbookForm">
+        <label for="addressInput">Address:</label>
+        <input type="text" id="addressInput" name="addressInput" required>
+        <label for="cityInput">City:</label>
+        <input type="text" id="cityInput" name="cityInput" required>
+        <label for="stateInput">State:</label>
+        <input type="text" id="stateInput" name="stateInput" required>
+        <label for="zipInput">Zip:</label>
+        <input type="text" id="zipInput" name="zipInput" required>
+        <label for="aboutInput">About:</label>
+        <textarea id="aboutInput" name="aboutInput" required></textarea>
+        <button type="submit">Save Entry</button>
+    </form>
+
+    <div id="map" style="height: 400px; width: 100%;"></div>
+
+    <script>
+        let map;
+        let markers = []; 
+        const apiKey = '$$2a$10$j5TrtQoRjTYMHiQIBrLUee6ikS5LyIIMDXEXy0OHaHE2RaP7//oN6';
+        const binId = '6715c521ad19ca34f8bbebfd'; 
+
+     
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 39.7029, lng: -75.1118 }, // Default center of the map
+                zoom: 8 // Default zoom level
+            });
+            loadScrapbookEntries(); // Load existing scrapbook entries
+        }
+
+        // Function to load scrapbook entries from JSONBin.io and display on the map
+        async function loadScrapbookEntries() {
+            const url = `https://api.jsonbin.io/v3/b/${binId}/latest`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'X-Master-Key': apiKey }
+                });
+                const data = await response.json();
+                const entries = data.record.scrapbookEntries || [];
+
+                entries.forEach(entry => addMarker(entry)); // Add each entry as a marker on the map
+            } catch (error) {
+                console.error('Failed to load scrapbook entries:', error);
+            }
+        }
+
+        // Function to add a marker for a given location
+        function addMarker(location) {
+            const latLng = {
+                lat: parseFloat(location.location.split(',')[0]),
+                lng: parseFloat(location.location.split(',')[1])
+            };
+
+            const marker = new google.maps.Marker({
+                map: map,
+                position: latLng,
+                title: location.city
+            });
+            markers.push(marker); // Add marker to markers array
+
+            const content = `
+                <div class="info-window-content">
+                    <div><strong>${location.city}, ${location.state}</strong></div><br>
+                    <div>${location.about}</div>
+                </div>
+            `;
+
+            const infowindow = new google.maps.InfoWindow({ content: content });
+            marker.addListener('click', () => infowindow.open(map, marker));
+        }
+
+        // Event listener for form submission to save a new entry
+        document.getElementById('scrapbookForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const city = document.getElementById('cityInput').value;
+            const state = document.getElementById('stateInput').value;
+            const zip = document.getElementById('zipInput').value;
+            const about = document.getElementById('aboutInput').value;
+            const location = `${document.getElementById('addressInput').value}, ${state} ${zip}`;
+
+            geocodeAndSaveLocation(city, state, location, about);
+        });
+
+        // Function to geocode location, save entry, and mark it on the map
+        async function geocodeAndSaveLocation(city, state, location, about) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ 'address': location }, async (results, status) => {
+                if (status === 'OK') {
+                    const latLng = results[0].geometry.location;
+
+                    const newLocation = {
+                        city: city,
+                        state: state,
+                        location: latLng.lat() + ', ' + latLng.lng(),
+                        about: about
+                    };
+
+                    await saveScrapbookEntry(newLocation);
+                    addMarker(newLocation); // Mark on the map
+                } else {
+                    alert('Geocode failed: ' + status);
+                }
+            });
+        }
+
+        // Function to save scrapbook entry to JSONBin.io
+        async function saveScrapbookEntry(entry) {
+            const url = `https://api.jsonbin.io/v3/b/${binId}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'PUT', // Update the bin
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': apiKey
+                    },
+                    body: JSON.stringify({ scrapbookEntries: [entry] })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save entry');
+                }
+
+                console.log('Scrapbook entry saved successfully.');
+            } catch (error) {
+                console.error('Failed to save entry:', error);
+            }
+        }
+    </script>
+</body>
+</html>

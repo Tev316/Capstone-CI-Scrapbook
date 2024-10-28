@@ -1,0 +1,141 @@
+
+.logo
+{
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-family: 'Brush Script MT', cursive;
+    color: #438abc;
+    font-size: 40px;  
+    margin: 0;
+    line-height: 1.2;  
+}
+body 
+{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(45deg, #d4f5c1, #a7d5f1);
+    display: flex;
+    justify-content: center;
+    /*align-items: center;
+    height: 100vh;
+    margin: 0;*/
+    padding: 20px 0;
+    margin: 0;
+}
+
+
+.profile-settings 
+{
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+h1 
+{
+    text-align: center;
+    font-family: 'Brush Script MT', cursive;
+    font-size: 40px;
+    color: #DAA520;
+    margin-bottom: 20px;
+}
+
+
+section 
+{
+    margin-bottom: 20px;
+}
+
+section h2 
+{
+    font-size: 18px;
+    font-family: 'Brush Script MT', cursive;
+    color: #DAA520;
+    margin-bottom: 10px;
+
+}
+
+.personal-info, .account-details, .security-settings
+{
+    border: 1px solid #ddd;  
+    border-radius: 8px;       
+    padding: 20px;            
+    margin-bottom: 20px;      
+    background-color: #fafafa; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+label 
+{
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="email"],
+input[type="password"] 
+{
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+input[type="checkbox"] 
+{
+    margin-right: 10px;
+}
+
+
+.save-btn 
+{
+    width: 100%;
+    padding: 10px;
+    margin: 20px 0;
+    background-color: #d4dee8;
+    color: #438abc;
+    border: none;
+    border-radius: 50px;
+    font-size: 25px;
+    font-family: 'Brush Script MT', cursive;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.save-btn:hover 
+{
+    background-color: #d5e8f7;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.back-home 
+{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-home a 
+{
+    color: #5a5a5a;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.back-home a:hover 
+{
+    color: #438abc; 
+    text-decoration: underline;
+}

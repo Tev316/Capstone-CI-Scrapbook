@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="indexStyles.css">
+    <script>
+        let userProfiles = []; // Creates array for profiles
+        let userIdCounter = 1; // Initialize a counter for user IDs
+
+        // Function to fetch existing user profiles from JSONBin.io
+        async function fetchUserProfiles() {
+            const binId = '671fad5aacd3cb34a89e74b6'; 
+            const url = `https://api.jsonbin.io/v3/b/${binId}/latest`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.record || []; // Return existing records or an empty array
+                } else {
+                    console.error('Failed to fetch user profiles:', await response.text());
+                    return []; // Return empty array if fetch fails
+                }
+            } catch (error) {
+                console.error('Network error while fetching user profiles:', error);
+                return []; // Return empty array on network error
+            }
+        }
+
+        // Function to save user profiles data to JSONBin.io
+        async function saveUserProfile(userProfile) {
+            const apiKey = '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm'; 
+            const binId = '671fad5aacd3cb34a89e74b6'; 
+            const url = `https://api.jsonbin.io/v3/b/${binId}`;
+
+            try {
+                const existingProfiles = await fetchUserProfiles(); // Fetch existing profiles
+                
+                // DUPLICATE INPUT CHECK START
+                const isDuplicate = existingProfiles.some(profile => // func checks for dupe input
+                    profile.username === userProfile.username || profile.email === userProfile.email || profile.password === userProfile.password
+                );
+
+                if (isDuplicate) { // call function after input is taken
+                    alert('Username, email, or password already used //separate this part bc nobody wants to guess');
+                    return;
+                }
+
+                // DUPLICATE INPUT CHECK END
+                
+                
+                existingProfiles.push(userProfile); // Add the new profile to the existing array
+
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': apiKey
+                    },
+                    body: JSON.stringify(existingProfiles)
+                });
+
+                if (response.ok) {
+                    console.log('User profile successfully saved to JSONBin.io'); // Can probably take this out it's just for debugging
+                    alert('Account created successfully!');
+
+                    // Increment userIdCounter only after a successful save
+                    userIdCounter++;
+
+                    // Redirect to wowHomescreen.html after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'wowHomescreen.html';
+                    }, 1000); // 1 second delay
+                } else {
+                    console.error('Failed to save user profile to JSONBin.io:', await response.text());
+                    alert('Failed to create account. Please try again.');
+                }
+            } catch (error) {
+                console.error('Network error while saving user profile:', error);
+                alert('Failed to create account due to network error. Please try again.');
+            }
+        }
+
+        // Event listener for form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.login-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                
+                const email = document.querySelector('input[type="email"]').value;
+                const username = document.querySelector('input[type="text"]').value;
+                const password = document.querySelector('input[type="password"]').value;
+
+                const userProfile = { id: userIdCounter, email, username, password }; // Instantiate new profile
+                saveUserProfile(userProfile); // Save the new user profile
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1 class="title">SCRAPBOOK</h1>
+            <form class="login-form">
+                <input type="email" placeholder="Email" class="input-field" required>
+                <input type="text" placeholder="Username" class="input-field" required>
+                <input type="password" placeholder="Password" class="input-field" required>
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+            <a href="index.html" class="register-link">Already have an account? Login</a>
+        </div>
+    </div>
+</body>
+</html>

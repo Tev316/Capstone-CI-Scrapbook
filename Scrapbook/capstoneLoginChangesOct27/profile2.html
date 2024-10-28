@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps and JSONBin Integration</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ep4rBtq2tecPJgVqHYS9vt6vKwFLFuE&callback=initMap" async defer></script>
+    <script>
+        let map;
+        let userProfiles = []; // Creates array for multiple jsonbin profiles
+        let userIdCounter = 1; // Initialize a counter for unique user IDs
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -34.397, lng: 150.644 },
+                zoom: 8 
+            });
+        }
+
+        // Function to save user profiles data to JSONBin.io
+        async function saveUserProfiles() {
+            const apiKey = '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm'; 
+            const binId = '6702a99aacd3cb34a8923306'; 
+            const url = `https://api.jsonbin.io/v3/b/${binId}`;
+
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': apiKey
+                },
+                body: JSON.stringify(userProfiles)
+            });
+
+            if (response.ok) {
+                console.log('User profiles successfully saved to JSONBin.io');
+            } else {
+                console.error('Failed to save user profiles to JSONBin.io');
+            }
+        }
+
+        // Event listener for user profile submission
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('profileForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const username = document.getElementById('usernameInput').value;
+                const password = document.getElementById('passwordInput').value;
+                const visibility = document.querySelector('input[name="visibility"]:checked').value;
+
+                const settings = { visibility: visibility }; 
+                const userProfile = { id: userIdCounter++, username, password, settings }; //instantiate new profile
+
+                userProfiles.push(userProfile); // Add newest profile to the end of array
+                saveUserProfiles();
+            });
+        });
+    </script>
+</head>
+<body>
+    <form id="profileForm">
+        <label for="usernameInput">Username:</label>
+        <input type="text" id="usernameInput" name="usernameInput" required>
+        <label for="passwordInput">Password:</label>
+        <input type="password" id="passwordInput" name="passwordInput" required>
+        <fieldset>
+            <legend>Profile Visibility:</legend>
+            <label>
+                <input type="radio" name="visibility" value="public" checked> Public
+            </label>
+            <label>
+                <input type="radio" name="visibility" value="private"> Private
+            </label>
+        </fieldset>
+        <button type="submit">Create Profile</button>
+    </form>
+
+    <div id="map" style="height: 400px; width: 100%;"></div>
+</body>
+</html>

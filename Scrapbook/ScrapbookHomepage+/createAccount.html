@@ -23,6 +23,8 @@
     <!-- JavaScript for account creation -->
     <script>
         async function createAccount(event) {
+
+            event.preventDefault();
             // Collect form values
             const email = document.getElementById('emailInput').value;
             const username = document.getElementById('usernameInput').value;

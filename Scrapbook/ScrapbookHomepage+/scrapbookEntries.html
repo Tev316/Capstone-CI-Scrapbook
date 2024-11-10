@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrapbook Project</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ep4rBtq2tecPJgVqHYS9vt6vKwFLFuE&callback=initMap" async defer></script>
+    <style>
+        .info-window-content { max-width: 200px; }
+    </style>
+</head>
+<body>
+    <button id="newEntryBtn">New Entry</button>
+    
+    <form id="scrapbookForm" style="display: none;">
+        <label for="aboutInput">About:</label>
+        <textarea id="aboutInput" required></textarea>
+        <button type="submit">Save Entry</button>
+        <button type="button" id="cancelEditBtn">Cancel</button>
+    </form>
+
+    <div id="map" style="height: 400px; width: 100%;"></div>
+
+    <script>
+        let map, userLocation;
+        const apiKey = '$2a$10$j5TrtQoRjTYMHiQIBrLUee6ikS5LyIIMDXEXy0OHaHE2RaP7//oN6';
+        const binId = '6715c521ad19ca34f8bbebfd';
+        const markersArray = [];
+        let editingMarker = null;
+
+        function initMap() {
+            navigator.geolocation?.getCurrentPosition(position => {
+                userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                map = new google.maps.Map(document.getElementById('map'), { center: userLocation, zoom: 15 });
+                loadEntries();
+                
+                document.getElementById('newEntryBtn').onclick = () => {
+                    addMarker(userLocation, "New Entry");
+                    document.getElementById('scrapbookForm').style.display = 'block';
+                    document.getElementById('aboutInput').value = "";
+                    editingMarker = null;
+                };
+            }, () => alert("Geolocation failed or is not supported."));
+        }
+
+        async function loadEntries() {
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                    headers: { 'X-Master-Key': apiKey }
+                });
+                const { record } = await response.json();
+                record.scrapbookEntries?.forEach(entry => addMarker({
+                    lat: parseFloat(entry.location.split(',')[0]),
+                    lng: parseFloat(entry.location.split(',')[1])
+                }, entry.about, false));
+            } catch (error) {
+                console.error('Error loading entries:', error);
+            }
+        }
+
+        function addMarker(location, about = "", isNew = true) {
+            const marker = new google.maps.Marker({ position: location, map, title: about });
+            const infowindow = new google.maps.InfoWindow({
+                content: `
+                    <div class="info-window-content">
+                        <strong>${about || "New Entry"}</strong><br>${about}
+                        <button onclick="editEntry(${markersArray.length})">Edit Entry</button>
+                        <button onclick="deleteEntry(${markersArray.length})">Delete Entry</button>
+                    </div>
+                `
+            });
+            marker.addListener('click', () => infowindow.open(map, marker));
+            markersArray.push({ marker, about });
+            if (isNew) infowindow.open(map, marker);
+        }
+
+        window.editEntry = function(index) {
+            editingMarker = markersArray[index];
+            document.getElementById('aboutInput').value = editingMarker.about;
+            document.getElementById('scrapbookForm').style.display = 'block';
+        };
+
+        window.deleteEntry = async function(index) {
+            const markerData = markersArray[index];
+            markerData.marker.setMap(null);
+            markersArray.splice(index, 1);
+            await saveEntries();
+            alert("Entry deleted successfully!");
+        };
+
+        document.getElementById('scrapbookForm').onsubmit = async event => {
+            event.preventDefault();
+            const about = document.getElementById('aboutInput').value;
+
+            if (editingMarker) {
+                editingMarker.about = about;
+            } else {
+                const lastMarker = markersArray[markersArray.length - 1];
+                lastMarker.about = about;
+            }
+
+            await saveEntries();
+            document.getElementById('scrapbookForm').style.display = 'none';
+        };
+
+        async function saveEntries() {
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+                    body: JSON.stringify({
+                        scrapbookEntries: markersArray.map(m => ({
+                            location: `${m.marker.getPosition().lat()}, ${m.marker.getPosition().lng()}`,
+                            about: m.about
+                        }))
+                    })
+                });
+                if (response.ok) alert("Entries saved successfully!");
+                else throw new Error('Save failed');
+            } catch (error) {
+                console.error('Error saving entries:', error);
+            }
+        }
+
+        document.getElementById('cancelEditBtn').onclick = () => {
+            document.getElementById('scrapbookForm').style.display = 'none';
+            editingMarker = null;
+        };
+    </script>
+</body>
+</html>

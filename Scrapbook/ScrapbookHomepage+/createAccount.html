@@ -20,44 +20,41 @@
         </div>
     </div>
 
-    <!-- JavaScript for account creation -->
     <script>
         async function createAccount(event) {
-
             event.preventDefault();
-            // Collect form values
             const email = document.getElementById('emailInput').value;
             const username = document.getElementById('usernameInput').value;
             const password = document.getElementById('passwordInput').value;
 
             const apiKey = '$2a$10$j5TrtQoRjTYMHiQIBrLUee6ikS5LyIIMDXEXy0OHaHE2RaP7//oN6';
-            const binId = '671efac9e41b4d34e449edfd';
+            const binId = '6731852de41b4d34e4520d33';
             const url = `https://api.jsonbin.io/v3/b/${binId}`;
 
             try {
-                // Fetch existing user profiles from JSONBin
                 let response = await fetch(url, {
                     method: 'GET',
-                    headers: {
-                        'X-Master-Key': apiKey,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'X-Master-Key': apiKey, 'Content-Type': 'application/json' }
                 });
 
                 let data = await response.json();
                 let userProfiles = data.record.users || [];
 
-                // Check if username or email already exists
                 const userExists = userProfiles.some(user => user.username === username || user.email === email);
                 if (userExists) {
                     alert("Username or email already exists. Please try a different one.");
                     return;
                 }
 
-                const newUser = { email, username, password };
+                const newUser = { 
+                    email, 
+                    username, 
+                    password, 
+                    scrapbookEntries: [] 
+                };
+
                 userProfiles.push(newUser);
 
-                // Save updated user profiles back to JSONBin
                 response = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -69,7 +66,7 @@
 
                 if (response.ok) {
                     alert('Account created successfully!');
-                    window.location.href = 'index.html'; // Redirect to login page
+                    window.location.href = 'index.html';
                 } else {
                     throw new Error('Failed to save new account information.');
                 }

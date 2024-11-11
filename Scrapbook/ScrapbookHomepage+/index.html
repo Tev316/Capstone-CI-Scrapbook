@@ -19,39 +19,29 @@
         </div>
     </div>
 
-    <!-- JavaScript for login functionality -->
     <script>
         async function login(event) {
             event.preventDefault();
-          
             const username = document.getElementById('usernameInput').value;
             const password = document.getElementById('passwordInput').value;
 
             const apiKey = '$2a$10$j5TrtQoRjTYMHiQIBrLUee6ikS5LyIIMDXEXy0OHaHE2RaP7//oN6'; 
-            const binId = '671efac9e41b4d34e449edfd'; 
+            const binId = '6731852de41b4d34e4520d33'; 
             const url = `https://api.jsonbin.io/v3/b/${binId}`;
 
             try {
-                // Fetch user data from JSONBin
                 const response = await fetch(url, {
                     method: 'GET',
-                    headers: {
-                        'X-Master-Key': apiKey,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'X-Master-Key': apiKey, 'Content-Type': 'application/json' }
                 });
 
                 const data = await response.json();
                 const userProfiles = data.record.users || []; 
 
-                // Verify if entered credentials match any user in JSONBin
                 const user = userProfiles.find(user => user.username === username && user.password === password);
 
                 if (user) {
-                    // Store username in sessionStorage for later use
                     sessionStorage.setItem('username', username);
-
-                    // Redirect to profile home page
                     window.location.href = 'profileHome.html';
                 } else {
                     alert('Invalid username or password. Please try again.');
@@ -62,7 +52,6 @@
             }
         }
 
-        // Add event listener to the login form
         document.getElementById('loginForm').addEventListener('submit', login);
     </script>
 </body>

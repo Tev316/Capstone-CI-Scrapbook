@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrapbook</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1>SCRAPBOOK</h1>
+            </div>
+            <div class="menu">
+                <button class="menu-btn" id="newScrapBtn">New Scrap</button>
+                <button class="menu-btn" onclick="location.href='profileSettings.html'">Profile Settings</button>
+                <button class="menu-btn">Friends List</button>
+                <button id="logoutBtn" class="menu-btn">Logout</button>
+            </div>
+            <div class="footer">
+                <p>-----------------------</p>
+            </div>
+            
+            <div id="newScrapForm" class="new-scrap-form">
+                <textarea id="aboutInput" placeholder="Enter your scrap here..."></textarea>
+                <div>
+                    <button id="saveScrapBtn">Save Scrap</button>
+                    <button id="cancelScrapBtn">Cancel Scrap</button> 
+                </div>
+            </div>
+        </div>
+        <div class="toggle-button" id="toggleButton">></div>
+        <div class="map-container" id="mapContainer">
+            <div id="map" style="height: 100%;"></div>
+        </div>
+    </div>
+
+    <script src="webpage.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ep4rBtq2tecPJgVqHYS9vt6vKwFLFuE&callback=initMap" async defer></script>
+</body>
+</html>

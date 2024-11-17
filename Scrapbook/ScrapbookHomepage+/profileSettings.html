@@ -7,46 +7,62 @@
     <link rel="stylesheet" href="profileSettingsStyle.css">
 </head>
 <body>
-    <h1 class="logo">S<br>C<br>R<br>A<br>P<br>B<br>O<br>O<br>K</h1>
+    <!-- Logo -->
+    <div class="logo">Scrapbook</div>
+
+    <!-- Profile Settings Container -->
     <div class="profile-settings">
         <h1>Profile Settings</h1>
 
-       
-        <section class="personal-info">
-            <h2>PERSONAL INFORMATION</h2>
-            <label for="name">Name</label>
-            <input type="text" id="name" placeholder="Enter your name">
-            
-            <label for="dob">Date of Birth</label>
-            <input type="date" id="dob">
-            
-  
-        </section>
+        <!-- Profile Settings Form -->
+        <form id="profileSettingsForm">
+            <section class="personal-info">
+                <h2>Personal Information</h2>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username">
 
-        
-        <section class="account-details">
-            <h2>ACCOUNT DETAILS</h2>
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter username">
-            
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Enter email address">
-        </section>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
 
-       
-        <section class="security-settings">
-            <h2>SECURITY SETTINGS</h2>
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter new password">
-        </section>
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob">
+            </section>
 
+            <section class="account-details">
+                <h2>Account Details</h2>
+                <label for="password">New Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter new password">
+            </section>
 
-        
-        <button type="submit" class="save-btn">Save Changes</button>
+            <section class="security-settings">
+                <h2>Security Settings</h2>
+                <label>
+                    <input type="checkbox" id="enable2fa" name="enable2fa">
+                    Enable Two-Factor Authentication
+                </label>
+            </section>
 
-        <p class="back-home">
-            <a href="profilePage.html">Back to Home</a>
-        </p>
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+
+        <!-- Back to Home Button -->
+        <div class="back-home">
+            <button id="backToHomeBtn" class="save-btn">Back to Home</button>
+        </div>
     </div>
+
+    <script>
+        // Event listener for the "Back to Home" button
+        document.getElementById('backToHomeBtn').addEventListener('click', () => {
+            window.location.href = 'homepageIndex.html'; // Redirect to the homepage
+        });
+
+        // Profile settings form submission logic
+        document.getElementById('profileSettingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Profile changes saved successfully!');
+            // Add logic to save form data if required
+        });
+    </script>
 </body>
 </html>

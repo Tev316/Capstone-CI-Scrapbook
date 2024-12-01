@@ -56,3 +56,51 @@ saveScrapBtn.addEventListener('click', () => {
         alert('Please enter some text for the scrap!');
     }
 });
+
+const friendsListContainer = document.getElementById('friendsListContainer');
+const friendsListBtn = document.getElementById('friendsListBtn');
+const friendUsername = document.getElementById('friendUsername');
+const followBtn = document.getElementById('followBtn');
+const friendsDropdown = document.getElementById('friendsDropdown');
+
+// Load existing friends from localStorage 
+const loadFriends = () => {
+    const friends = JSON.parse(localStorage.getItem('friends')) || [];
+    friends.forEach(friend => addFriendToDropdown(friend));
+};
+
+// Save  friend to localStorage & update the dropdown
+const saveFriend = (friend) => {
+    const friends = JSON.parse(localStorage.getItem('friends')) || [];
+    friends.push(friend);
+    localStorage.setItem('friends', JSON.stringify(friends));
+    addFriendToDropdown(friend);
+};
+
+// Add  friend to  dropdown 
+const addFriendToDropdown = (friend) => {
+    const option = document.createElement('option');
+    option.textContent = friend;
+    option.value = friend;
+    friendsDropdown.appendChild(option);
+};
+
+// Toggle visibility of the friends list container
+friendsListBtn.addEventListener('click', () => {
+    friendsListContainer.style.display =
+        friendsListContainer.style.display === 'none' ? 'block' : 'none';
+});
+
+// Handle adding a friend
+followBtn.addEventListener('click', () => {
+    const username = friendUsername.value.trim();
+    if (username) {
+        saveFriend(username);
+        friendUsername.value = ''; // Clear input field
+    } else {
+        alert('Please enter a username!');
+    }
+});
+
+// Initialize the friends list on page load
+document.addEventListener('DOMContentLoaded', loadFriends);

@@ -150,3 +150,39 @@ body
 {
     background: linear-gradient(to right, rgb(220, 81, 122), rgb(255, 120, 90));
 }
+
+.friends-list-container {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+}
+
+#friendUsername {
+    width: 90%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+#followBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(-225deg, #DFFFCD 0%, #90F9C4 48%, #39F3BB 100%);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#friendsDropdown {
+    width: 90%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: white;
+}
+

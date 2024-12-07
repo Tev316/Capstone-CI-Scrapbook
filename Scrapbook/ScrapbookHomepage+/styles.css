@@ -188,3 +188,47 @@ body
 }
 
 
+/* Styling for friends list */
+.friends-list {
+    margin-top: 10px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.friends-list.hidden {
+    display: none;
+}
+
+#friend-username-input {
+    width: 80%;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+#add-friend-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#friends-dropdown-list {
+    width: 80%;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+
+
+

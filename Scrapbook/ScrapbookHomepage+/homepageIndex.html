@@ -16,7 +16,7 @@
             <div class="menu">
                 <button class="menu-btn" id="newScrapBtn">New Scrap</button>
                 <button class="menu-btn" onclick="location.href='profileSettings.html'">Profile Settings</button>
-                <button class="menu-btn">Friends List</button>
+                <button class="menu-btn" id="friends-list-toggle">Friends List</button>
                 <button id="logoutBtn" class="menu-btn">Logout</button>
             </div>
             <div class="footer">
@@ -30,6 +30,16 @@
                     <button id="cancelScrapBtn">Cancel Scrap</button> 
                 </div>
             </div>
+            
+            <!-- Container for the Frineds List -->
+            <div id="friends-list-container" class="friends-list hidden">
+                <input type="text" id="friend-username-input" placeholder="Enter username" />
+                <button id="add-friend-button">Follow</button>
+                <select id="friends-dropdown-list">
+                    <option disabled selected>Select a friend</option>
+                </select>
+            </div>
+            
         </div>
         <div class="toggle-button" id="toggleButton">></div>
         <div class="map-container" id="mapContainer">

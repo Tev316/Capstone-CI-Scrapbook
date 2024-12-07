@@ -216,10 +216,14 @@ body
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
-    background-color: #4CAF50;
+    background: linear-gradient(-225deg, #DFFFCD 0%, #90F9C4 48%, #39F3BB 100%);
     color: white;
     cursor: pointer;
     font-size: 16px;
+}
+
+#add-friend-button:hover {
+    background: linear-gradient(-225deg, #b6f0b0 0%, #72f4b5 48%, #1fdf9f 100%);
 }
 
 #friends-dropdown-list {

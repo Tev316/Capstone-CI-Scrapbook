@@ -206,3 +206,29 @@ logoutBtn.addEventListener('click', () => {
     sessionStorage.clear();
     window.location.href = 'index.html';
 });
+
+//Friends List
+const friendsListToggle = document.getElementById('friends-list-toggle');
+const friendsListContainer = document.getElementById('friends-list-container');
+const addFriendButton = document.getElementById('add-friend-button');
+const friendUsernameInput = document.getElementById('friend-username-input');
+const friendsDropdownList = document.getElementById('friends-dropdown-list');
+
+// Toggle Friends List visibility
+friendsListToggle.addEventListener('click', () => {
+    friendsListContainer.classList.toggle('hidden');
+});
+
+// Add a friend to the dropdown list
+addFriendButton.addEventListener('click', () => {
+    const username = friendUsernameInput.value.trim();
+    if (username) {
+        const newFriendOption = document.createElement('option');
+        newFriendOption.textContent = username;
+        newFriendOption.value = username;
+        friendsDropdownList.appendChild(newFriendOption);
+        friendUsernameInput.value = ''; // Clear the input field
+    } else {
+        alert('Please enter a username!');
+    }
+});

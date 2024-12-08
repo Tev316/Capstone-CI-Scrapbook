@@ -1,0 +1,188 @@
+body 
+{
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.container 
+{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.sidebar 
+{
+    width: 33.33%;
+    background-color: #f4f4f4;
+    transition: width 0.3s ease;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.map-container 
+{
+    width: 66.67%;
+    transition: width 0.3s ease;
+}
+
+#map 
+{
+    height: 100%;
+    width: 100%;
+}
+
+.toggle-button 
+{
+    width: 40px;
+    height: 80px;
+    background: linear-gradient(to top, #f1de72fb, #ffd700);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    position: absolute;
+    left: calc(34.7% - 20px);
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    transition: left 0.3s ease;
+}
+
+.footer 
+{
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.menu 
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px; /* Space between buttons */
+}
+
+.menu-btn 
+{
+    width: 150px;
+    padding: 15px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(to top, #e9e9e9, #B0B0B0); /* gradient */
+    color: #139ee4; /* text */
+    font-family: 'Dancing Script', cursive;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+}
+
+.menu-btn:hover 
+{
+    background: linear-gradient(to top, #D3D3D3, #B0B0B0);
+    color: #FFFFFF;
+}
+
+.logo 
+{
+    text-align: center;
+    font-family: 'Dancing Script', cursive;
+    margin-top: 10px;
+}
+
+
+.new-scrap-form 
+{
+    width: 100%;
+    margin-top: 20px;
+    text-align: center;
+    display: none; /* Hidden*/
+}
+
+#scrapText 
+{
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+#saveScrapBtn, #cancelScrapBtn 
+{
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#saveScrapBtn 
+{
+    background: linear-gradient(-225deg, #DFFFCD 0%, #90F9C4 48%, #39F3BB 100%);
+    color: white;
+}
+
+#cancelScrapBtn 
+{
+    background: linear-gradient(to right, rgb(242, 112, 156), rgb(255, 148, 114));
+    color: white;
+}
+
+#saveScrapBtn:hover 
+{
+    background: linear-gradient(-225deg, #b6f0b0 0%, #72f4b5 48%, #1fdf9f 100%);
+}
+
+#cancelScrapBtn:hover 
+{
+    background: linear-gradient(to right, rgb(220, 81, 122), rgb(255, 120, 90));
+}
+
+.friends-list-container {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+}
+
+#friendUsername {
+    width: 90%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+#followBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(-225deg, #DFFFCD 0%, #90F9C4 48%, #39F3BB 100%);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#friendsDropdown {
+    width: 90%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: white;
+}
+

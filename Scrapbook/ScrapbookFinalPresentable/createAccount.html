@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="indexStyles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1 class="title">SCRAPBOOK</h1>
+            <form class="login-form">
+                <input type="email" placeholder="Email" id="emailInput" class="input-field" required>
+                <input type="text" placeholder="Username" id="usernameInput" class="input-field" required>
+                <input type="password" placeholder="Password" id="passwordInput" class="input-field" required>
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+            <a href="index.html" class="register-link">Already have an account? Login</a>
+        </div>
+    </div>
+
+    <script>
+        async function createAccount(event) {
+            event.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            const username = document.getElementById('usernameInput').value;
+            const password = document.getElementById('passwordInput').value;
+
+            const apiKey = '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm';
+            const binId = '673ab458ad19ca34f8cbc931';
+            const url = `https://api.jsonbin.io/v3/b/${binId}`;
+
+            try {
+                let response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'X-Master-Key': apiKey, 'Content-Type': 'application/json' }
+                });
+
+                let data = await response.json();
+                let userProfiles = data.record.users || [];
+
+                const userExists = userProfiles.some(user => user.username === username || user.email === email);
+                if (userExists) {
+                    alert("Username or email already exists. Please try a different one.");
+                    return;
+                }
+
+                const newUser = { 
+                    email, 
+                    username, 
+                    password, 
+                    scrapbookEntries: [] 
+                };
+
+                userProfiles.push(newUser);
+
+                response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': apiKey
+                    },
+                    body: JSON.stringify({ users: userProfiles })
+                });
+
+                if (response.ok) {
+                    alert('Account created successfully!');
+                    window.location.href = 'index.html';
+                } else {
+                    throw new Error('Failed to save new account information.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while creating the account.');
+            }
+        }
+
+        document.querySelector('.login-form').addEventListener('submit', createAccount);
+    </script>
+</body>
+
+</html>

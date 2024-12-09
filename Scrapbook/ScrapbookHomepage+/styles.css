@@ -232,6 +232,25 @@ body
     border: 1px solid #aaa;
     border-radius: 5px;
 }
+#showFriendsEntriesBtn {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(to top, #e9e9e9, #B0B0B0); /* gradient */
+    color: #139ee4; /* text */
+    font-family: 'Dancing Script', cursive;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+#showFriendsEntriesBtn:hover {
+    background: linear-gradient(to top, #D3D3D3, #B0B0B0);
+    color: #FFFFFF;
+}
 
 
 

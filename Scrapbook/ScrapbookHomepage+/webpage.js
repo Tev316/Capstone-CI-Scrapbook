@@ -79,6 +79,7 @@ async function loadEntries() {
                 const location = entry.location.split(',').map(coord => parseFloat(coord.trim()));
                 addMarker({ lat: location[0], lng: location[1] }, entry.about, index);
             });
+            loadFriends(user.friends);  // Load friends
         }
     } catch (error) {
         console.error('Error loading scrapbook entries:', error);
@@ -207,7 +208,7 @@ logoutBtn.addEventListener('click', () => {
     window.location.href = 'index.html';
 });
 
-//Friends List
+// Friends List
 const friendsListToggle = document.getElementById('friends-list-toggle');
 const friendsListContainer = document.getElementById('friends-list-container');
 const addFriendButton = document.getElementById('add-friend-button');
@@ -219,16 +220,121 @@ friendsListToggle.addEventListener('click', () => {
     friendsListContainer.classList.toggle('hidden');
 });
 
-// Add a friend to the dropdown list
-addFriendButton.addEventListener('click', () => {
-    const username = friendUsernameInput.value.trim();
-    if (username) {
-        const newFriendOption = document.createElement('option');
-        newFriendOption.textContent = username;
-        newFriendOption.value = username;
-        friendsDropdownList.appendChild(newFriendOption);
+// Add a friend to the dropdown list and save to JSONBin
+addFriendButton.addEventListener('click', async () => {
+    const username = sessionStorage.getItem('username');
+    const friendUsername = friendUsernameInput.value.trim();
+
+    if (friendUsername) {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                headers: { 'X-Master-Key': apiKey }
+            });
+            const { record } = await response.json();
+            const user = record.users.find(u => u.username === username);
+            const friend = record.users.find(u => u.username === friendUsername);
+
+            if (user && friend && !user.friends.includes(friendUsername)) {
+                user.friends.push(friendUsername);
+                const updateResponse = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': apiKey
+                    },
+                    body: JSON.stringify(record)
+                });
+
+                if (updateResponse.ok) {
+                    alert('Friend added!');
+                    loadEntries(); // Optionally reload data to reflect changes
+                    friendsDropdownList.innerHTML = ''; // Clear current list
+                    loadFriends(user.friends); // Reload friends list
+                }
+            } else {
+                alert('Friend not found or already added.');
+            }
+        } catch (error) {
+            console.error('Error adding friend:', error);
+        }
         friendUsernameInput.value = ''; // Clear the input field
     } else {
         alert('Please enter a username!');
     }
 });
+
+// Function to load friends into the dropdown list
+function loadFriends(friends) {
+    friendsDropdownList.innerHTML = ''; // Clear existing options
+    friends.forEach(friend => {
+        const option = document.createElement('option');
+        option.textContent = friend;
+        option.value = friend;
+        friendsDropdownList.appendChild(option);
+    });
+}
+// Function to display a friend's scrapbook entries on the map
+async function showFriendsEntries(friendUsername) {
+    const username = sessionStorage.getItem('username');
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+            headers: { 'X-Master-Key': apiKey }
+        });
+        const { record } = await response.json();
+        const user = record.users.find(u => u.username === username);
+        const friend = record.users.find(u => u.username === friendUsername);
+
+        if (friend) {
+            // Clear existing markers before displaying new ones
+            markersArray.forEach(marker => marker.setMap(null));
+            markersArray.length = 0;
+
+            friend.scrapbookEntries.forEach((entry, index) => {
+                const location = entry.location.split(',').map(coord => parseFloat(coord.trim()));
+                addMarker({ lat: location[0], lng: location[1] }, entry.about, index);
+            });
+
+            alert(`Showing ${friendUsername}'s scrapbook entries!`);
+        } else {
+            alert('Friend not found.');
+        }
+    } catch (error) {
+        console.error('Error showing friend\'s scrapbook entries:', error);
+    }
+}
+
+// Add an event listener to the friends dropdown list for selection change
+friendsDropdownList.addEventListener('change', () => {
+    const selectedFriend = friendsDropdownList.value;
+    if (selectedFriend !== 'Select a friend' && selectedFriend !== '') {
+        showFriendsEntries(selectedFriend);
+    }
+});
+// Function to show a friend's scrapbook entries on the map
+async function showFriendsEntries(friendUsername) {
+    const username = sessionStorage.getItem('username');
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+            headers: { 'X-Master-Key': apiKey }
+        });
+        const { record } = await response.json();
+        const user = record.users.find(u => u.username === username);
+        const friend = record.users.find(u => u.username === friendUsername);
+
+        if (friend) {
+            // Clear existing markers before displaying new ones
+            markersArray.forEach(marker => marker.setMap(null));
+            markersArray.length = 0;
+
+            friend.scrapbookEntries.forEach((entry, index) => {
+                const location = entry.location.split(',').map(coord => parseFloat(coord.trim()));
+                addMarker({ lat: location[0], lng: location[1] }, entry.about, index);
+            });
+
+        } else {
+            alert('Friend not found.');
+        }
+    } catch (error) {
+        console.error('Error showing friend\'s scrapbook entries:', error);
+    }
+}

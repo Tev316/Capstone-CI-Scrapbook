@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="indexStyles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1 class="title">SCRAPBOOK</h1>
+            <form class="login-form" id="loginForm">
+                <input type="text" placeholder="Username" id="usernameInput" class="input-field" required>
+                <input type="password" placeholder="Password" id="passwordInput" class="input-field" required>
+                <button type="submit" class="login-btn">LOGIN</button>
+            </form>
+            <a href="createAccount.html" class="register-link">Register</a>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        async function login(event) {
+            event.preventDefault();
+            const username = document.getElementById('usernameInput').value;
+            const password = document.getElementById('passwordInput').value;
+
+            const apiKey = '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm'; 
+            const binId = '673ab458ad19ca34f8cbc931'; 
+            const url = `https://api.jsonbin.io/v3/b/${binId}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'X-Master-Key': apiKey, 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                const userProfiles = data.record.users || []; 
+
+                const user = userProfiles.find(user => user.username === username && user.password === password);
+
+                if (user) {
+                    sessionStorage.setItem('username', username);
+                    window.location.href = 'profileHome.html';
+                } else {
+                    alert('Invalid username or password. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while logging in.');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', login);
+    </script>
+</body>
+</html>

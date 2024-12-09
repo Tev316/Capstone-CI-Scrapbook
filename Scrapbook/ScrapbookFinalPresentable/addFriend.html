@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Map with Markers</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Ep4rBtq2tecPJgVqHYS9vt6vKwFLFuE&callback=initMap" async defer></script>
+    <style>
+        .info-window-content { max-width: 200px; }
+        #usernameForm { margin: 10px 0; }
+        .error { color: red; font-size: 14px; }
+        #map { height: 600px; width: 100%; }
+    </style>
+</head>
+<body>
+    <!-- Existing Username Form -->
+    <form id="usernameForm">
+        <label for="usernameInput">Enter Existing Username:</label>
+        <input type="text" id="usernameInput" placeholder="Enter Username" required />
+        <button type="submit" disabled>Add Username</button> <!-- Initially disabled -->
+    </form>
+    <p class="error" id="errorMessage"></p> <!-- Error message -->
+
+    <!-- Username Dropdown Form -->
+    <form id="loadUserForm">
+        <label for="usernameSelect">Select Friend Username:</label>
+        <select id="usernameSelect" required disabled>
+            <option value="" disabled selected>Select a friend</option>
+        </select>
+        <button type="submit" disabled>Load User Data</button>
+    </form>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let markersArray = []; // Track all markers
+        let usersData = []; // Array to hold all user data
+        const apiKey = '$2a$10$Bt4h2wY0k2U3r/e3ovGt3.cZCcmkq6XK7NDg4zUpaTSep.K3cdFhm';
+        const binId = '673ab458ad19ca34f8cbc931';
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const usernameInput = document.getElementById('usernameInput');
+            const addUsernameButton = document.querySelector('#usernameForm button');
+
+            // Enable/Disable the button based on input
+            usernameInput.addEventListener('input', function () {
+                addUsernameButton.disabled = !this.value.trim();
+            });
+        });
+
+        function initMap() {
+            navigator.geolocation?.getCurrentPosition(position => {
+                const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                map = new google.maps.Map(document.getElementById('map'), { center: userLocation, zoom: 15 });
+
+                loadFriendsDropdown();
+
+                document.getElementById('usernameForm').onsubmit = (e) => {
+                    e.preventDefault();
+                    const newUsername = document.getElementById('usernameInput').value.trim();
+                    if (newUsername) {
+                        addNewUsername(newUsername);
+                    }
+                };
+
+                document.getElementById('loadUserForm').onsubmit = (e) => {
+                    e.preventDefault();
+                    const selectedFriend = document.getElementById('usernameSelect').value.trim();
+                    if (selectedFriend) {
+                        loadEntries(selectedFriend);
+                    }
+                };
+            }, () => alert("Geolocation failed or is not supported."));
+        }
+
+        async function loadFriendsDropdown() {
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+            headers: { 'X-Master-Key': apiKey }
+        });
+        const { record } = await response.json();
+        const usernameSelect = document.getElementById('usernameSelect');
+        const loadUserButton = document.querySelector('#loadUserForm button[type="submit"]');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Clear the dropdown
+        usernameSelect.innerHTML = '<option value="" disabled selected>Select a friend</option>';
+        loadUserButton.disabled = true; // Disable the button initially
+        errorMessage.textContent = ''; // Clear any error messages
+
+        // Store all user data
+        usersData = record.users;
+
+        // Get the current user's username
+        const currentUsername = sessionStorage.getItem('username');
+        if (!currentUsername) {
+            errorMessage.textContent = 'No user is logged in.';
+            return;
+        }
+
+        // Find the current user
+        const currentUser = usersData.find(user => user.username === currentUsername);
+        if (!currentUser) {
+            errorMessage.textContent = 'Current user data not found.';
+            return;
+        }
+
+        // Load friends into the dropdown
+        const friends = currentUser.friends;
+        if (friends.length > 0) {
+            friends.forEach(friend => {
+                const friendData = usersData.find(user => user.username === friend);
+                if (friendData) {
+                    const option = document.createElement('option');
+                    option.value = friendData.username;
+                    option.textContent = friendData.username;
+                    usernameSelect.appendChild(option);
+                }
+            });
+
+            // Enable dropdown and button if there are friends
+            usernameSelect.disabled = false;
+            loadUserButton.disabled = false;
+        } else {
+            // Disable dropdown and button if no friends are present
+            usernameSelect.disabled = true;
+            loadUserButton.disabled = true;
+        }
+    } catch (error) {
+        console.error('Error loading usernames:', error);
+    }
+}
+
+
+        async function updateJsonBin(updatedData) {
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': apiKey
+            },
+            body: JSON.stringify({ users: updatedData })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to update JSON bin: ${response.statusText}`);
+        }
+        console.log('JSON bin updated successfully.');
+    } catch (error) {
+        console.error('Error updating JSON bin:', error);
+    }
+}
+
+function addNewUsername(newUsername) {
+    const errorMessage = document.getElementById('errorMessage');
+    const currentUsername = sessionStorage.getItem('username');
+    if (!currentUsername) {
+        errorMessage.textContent = 'No user is logged in.';
+        return;
+    }
+
+    const currentUser = usersData.find(user => user.username === currentUsername);
+    const existingUser = usersData.find(user => user.username === newUsername);
+
+    if (!currentUser) {
+        errorMessage.textContent = 'Current user not found.';
+        return;
+    }
+
+    if (existingUser) {
+        if (!currentUser.friends.includes(newUsername)) {
+            currentUser.friends.push(newUsername);
+            alert(`${newUsername} has been added to your friends list.`);
+            document.getElementById('usernameInput').value = '';
+            errorMessage.textContent = '';
+
+            // Update JSON bin with the modified data
+            updateJsonBin(usersData);
+
+            // Reload the dropdown to reflect the changes
+            loadFriendsDropdown();
+        } else {
+            alert(`${newUsername} is already in your friends list.`);
+        }
+    } else {
+        errorMessage.textContent = 'This username does not exist. Please enter a valid username.';
+    }
+}
+
+
+        async function loadEntries(username) {
+            try {
+                clearMarkers();
+                const bounds = new google.maps.LatLngBounds();
+                const user = usersData.find(u => u.username === username);
+
+                if (user) {
+                    user.scrapbookEntries.forEach(entry => {
+                        const location = entry.location.split(',').map(coord => parseFloat(coord.trim()));
+                        const position = { lat: location[0], lng: location[1] };
+                        addMarker(position, entry.about);
+                        bounds.extend(position);
+                    });
+
+                    if (!bounds.isEmpty()) {
+                        map.fitBounds(bounds);
+                        const listener = google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+                            map.setZoom(map.getZoom() - 1);
+                        });
+                    }
+                } else {
+                    alert(`No data found for username: ${username}`);
+                }
+            } catch (error) {
+                console.error('Error loading scrapbook entries:', error);
+            }
+        }
+
+        function addMarker(location, description) {
+            const marker = new google.maps.Marker({ position: location, map: map, title: description });
+            const infoWindow = new google.maps.InfoWindow({
+                content: `<div class="info-window-content"><h3>${description}</h3></div>`
+            });
+
+            marker.addListener('click', () => infoWindow.open(map, marker));
+            markersArray.push(marker);
+        }
+
+        function clearMarkers() {
+            markersArray.forEach(marker => marker.setMap(null));
+            markersArray = [];
+        }
+    </script>
+</body>
+</html>

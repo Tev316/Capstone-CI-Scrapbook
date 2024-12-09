@@ -7,17 +7,20 @@
     <link rel="stylesheet" href="profileHome.css">
 </head>
 <body>
-    <!-- Welcome message container -->
+    <header id="topBar">
+        <div id="logo">Scrapbook</div>
+    </header>
+    <!-- Top center welcome message -->
     <div id="welcomeContainer">
         <div id="usernameDisplay"></div>
     </div>
-    <!-- Main container -->
+    
+    <!-- Main content -->
     <div class="container">
         <ul>
-            <li><a href="scrapbookEntries.html">View Scrapbook Entries</a></li>
+            <li><a href="scrapbookEntries.html">Add Scraps & View Entries</a></li>
             <li><a href="addFriend.html">Add Friends & View Their Scraps</a></li>
             <li><a href="ProfileSettings.html">Edit Profile</a></li>
-            <li><a href="settings.html">Settings</a></li>
             <li><a href="logout.html">Logout</a></li>
         </ul>
     </div>
@@ -25,8 +28,13 @@
     <script>
         // Function to load username from sessionStorage
         function loadUsername() {
-            const username = sessionStorage.getItem('username') || "Admin";
-            document.getElementById('usernameDisplay').textContent = `Welcome, ${username}!`;
+            const username = sessionStorage.getItem('username');
+            if (username) {
+                document.getElementById('usernameDisplay').textContent = `Welcome, ${username}!`;
+            } else {
+                // Redirect to login if no username is found
+                window.location.href = 'index.html';
+            }
         }
 
         loadUsername();

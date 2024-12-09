@@ -310,31 +310,3 @@ friendsDropdownList.addEventListener('change', () => {
         showFriendsEntries(selectedFriend);
     }
 });
-// Function to show a friend's scrapbook entries on the map
-async function showFriendsEntries(friendUsername) {
-    const username = sessionStorage.getItem('username');
-    try {
-        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-            headers: { 'X-Master-Key': apiKey }
-        });
-        const { record } = await response.json();
-        const user = record.users.find(u => u.username === username);
-        const friend = record.users.find(u => u.username === friendUsername);
-
-        if (friend) {
-            // Clear existing markers before displaying new ones
-            markersArray.forEach(marker => marker.setMap(null));
-            markersArray.length = 0;
-
-            friend.scrapbookEntries.forEach((entry, index) => {
-                const location = entry.location.split(',').map(coord => parseFloat(coord.trim()));
-                addMarker({ lat: location[0], lng: location[1] }, entry.about, index);
-            });
-
-        } else {
-            alert('Friend not found.');
-        }
-    } catch (error) {
-        console.error('Error showing friend\'s scrapbook entries:', error);
-    }
-}
